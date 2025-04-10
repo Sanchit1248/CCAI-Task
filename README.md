@@ -1,17 +1,22 @@
-NECESSARY LIBRARIES: ollama 
+NECESSARY LIBRARIES: ollama
+
 Run file from main.py
 
-College Advisor
+**College Advisor**
 
 Trials:
 
 1.	RAG: Tried implementing RAG since it seemed the most suitable. However no success since :
+
     a. Data was mostly numerical (RAG needs large amounts of textual data for LLM to train on)
+  	
     b. The only sources of data are govt sites (NTA) but are limited in info.
+  	
     c. There are no APIs so no live retrieval has been implemented.
+  	
     d. Rank vs Marks jsons when vector embedded kept being treated as word tokens and giving incorrect results.
 
-2.	Regex: Requires prompts in a very specific way which is not what the task demands.
+3.	Regex: Requires prompts in a very specific way which is not what the task demands.
 
 Hence, I stuck to a hybrid which uses LLMs for dealing with natural language and some logic for querying the data.
 
@@ -49,13 +54,18 @@ Best performance would be by implementing RAG. The only issue being: getting acc
 
 
 
-Sample Run (if running code not possible):
+
+**Sample Run (if running code not possible):**
+--------------------------------------------------
+
 (Some observations mentioned in brackets by me, not the agent)
+
 ('...' used by me to indicate that LLM continues with rest of the answer)
 
-
 Starting...
-Agent: Namaste! I'm thrilled to help you explore the best engineering colleges in India. It's exciting that you're considering pursuing your passion for engineering, and I'm here to guide you through the process. What sparked your interest in engineering, and what are your expectations from an ideal college experience?
+Agent: Namaste!I'm thrilled to help you explore the best engineering colleges in India. It's exciting that you're considering pursuing your passion for engineering, and I'm here to guide you through the process. What sparked your interest in engineering, and what are your expectations from an ideal college experience?
+
+
 --------------------------------------------------
 Type 'exit' or 'quit' to end the conversation.
 
@@ -70,14 +80,14 @@ This program is designed to provide a solid foundation in chemistry and its appl
 **Environmental Science and Engineering (4 Years, Bachelor of Technology) at Indian Institute Of Technology Bombay**
 This program....				     
 (continues to list programs I am eligible for in IITB)
-
+________________________________________________________
 
 You: how is the campus life over there?				             
 (IITB NOT mentioned to test memory)
 
 Agent: Campus life at IIT Bombay is truly vibrant and exciting! As one of the oldest and most prestigious engineering institutions in India, IIT Bombay offers a....			       
 (IITB used from memory)
-
+________________________________________________________
 
 You: should i take a drop instead? 						
 (again, no information given)
@@ -85,8 +95,9 @@ You: should i take a drop instead?
 Agent: The age-old dilemma of whether to take a drop or not!
 As your advisor, I'd like to weigh in on this decision. Since you've already secured admission to IIT Bombay with 180 marks, it's essential to consider the pros and cons of taking a drop.... 		        
 (agent memory working)
-
+________________________________________________________
 
 You: end
+
 Goodbye!
 ________________________________________________________
