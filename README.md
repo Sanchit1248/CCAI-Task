@@ -1,6 +1,10 @@
-NECESSARY LIBRARIES: ollama
+HOW TO RUN
 
-Run file from main.py
+1. Install ollama
+
+2. Download all jsons from data and put them in folder named 'data' without changing any names
+
+3. Run main.py
 
 **College Advisor**
 
