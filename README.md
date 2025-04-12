@@ -6,7 +6,11 @@ HOW TO RUN
 
 3. Run main.py
 
+Code may take 1-4 min for generating response (depending on device). Please wait for response.
+
+
 **College Advisor**
+--------------------
 
 Trials:
 
