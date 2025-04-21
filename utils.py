@@ -2,7 +2,7 @@ import json
 import ollama
 
 def extract_parameters(query):
-    """Returns normalized parameters with robust error handling."""
+    
     prompt = f"""Extract college search parameters from this query as JSON:
     {{
         "institute": "full name or null",
