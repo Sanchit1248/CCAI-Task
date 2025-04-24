@@ -64,7 +64,7 @@ def extract_parameters(query):
 
 
 
-# Helper Functions
+#Preprocessing functions
 def predict_rank(marks, exam_type):
     #rank prediction with intrapolation b/w marks
     try:
@@ -77,7 +77,6 @@ def predict_rank(marks, exam_type):
         with open(data_file) as f:
             rank_data = sorted(json.load(f), key=lambda x: x['Marks'])
         
-        # Find bounding marks for interpolation
         lower = None
         upper = None
         
@@ -88,11 +87,11 @@ def predict_rank(marks, exam_type):
                 upper = entry
                 break
         
-        # Exact match case
+
         if lower and lower['Marks'] == marks:
             return lower['Rank']
         
-        # Interpolation case
+        # Interpolation
         if lower and upper:
             mark_range = upper['Marks'] - lower['Marks']
             rank_range = upper['Rank'] - lower['Rank']
@@ -155,16 +154,16 @@ def filter_seats(data, rank, institute=None, program=None, gender='Gender-Neutra
             #debug
             #print(f"Checking: {entry['Institute']} | Program: {entry['Academic Program Name']} | Closing Rank: {closing_rank} | Query Rank: {rank}")
             
-            # Skip rank check first
+            # Rank check
             if rank > closing_rank:
                 continue
 
-            # Institute check (only if specified)
+            # Institute check 
             if institute is not None:  # Explicit None check
                 if entry.get('Institute') != institute:
                     continue
 
-            # Normalize program names for comparison
+            # Normalized program names
             entry_program = entry.get('Academic Program Name', '').lower()
             query_program = program.lower() if program else None
             
@@ -175,7 +174,7 @@ def filter_seats(data, rank, institute=None, program=None, gender='Gender-Neutra
                 #print(f"Skipped due to program mismatch ({normalized_query_program} not in {normalized_entry_program})")
                 continue
 
-            # Normalize gender for comparison
+            # Normalized gender 
             entry_gender = entry.get('Gender', '').lower()
             query_gender = gender.lower()
             
@@ -294,7 +293,7 @@ def handle_query(query, conversation_history):
         response = generate_response(query_json, filtered_data)
 
         # LLM MEMORY IMPLEMENTED
-        # Update conversation history
+
         conversation_history.append({'role': 'user', 'content': query})
         conversation_history.append({'role': 'assistant', 'content': response})
         
@@ -302,7 +301,7 @@ def handle_query(query, conversation_history):
 
     else:
         try:
-            # Extract last mentioned institute from conversation history
+            # Extract last mentioned institute 
             last_institute = None
             for msg in reversed(conversation_history):
                 if msg['role'] == 'user':
@@ -311,7 +310,7 @@ def handle_query(query, conversation_history):
                         last_institute = extracted_params['institute']
                         break
 
-            # Create a context-aware prompt
+            # Making a context aware prompt
             prompt_context = f"The student has been asking about {last_institute}." if last_institute else "No specific institute mentioned yet."
             prompt = f"""
             You are an expert advisor for Indian engineering colleges ONLY. Never mention non-Indian institutions such as UBC or MIT.
@@ -319,7 +318,7 @@ def handle_query(query, conversation_history):
             Student's question: {query}
             """
 
-            # Add user query and prompt to conversation history
+            # Add query and prompt
             conversation_history.append({'role': 'user', 'content': prompt})
             response_obj = ollama.chat(
                 model='llama3',
