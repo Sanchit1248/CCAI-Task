@@ -1,111 +1,183 @@
-HOW TO RUN
+# JEE College Advisor
 
-1. Install ollama
+A local LLM-powered JEE college counseling assistant that lets users query JEE Main and JEE Advanced cutoff data using natural language.
 
-2. Download all jsons from data and put them in folder named 'data' without changing any names
+The project combines an LLM for language understanding with deterministic retrieval from structured cutoff data, allowing reliable numerical queries while still supporting general conversational questions.
 
-3. Run main.py
+## Why This Architecture?
 
-Code may take 1-4 min for generating response (depending on device). Please wait for response.
+I initially explored using RAG for the project, but the available data was primarily structured numerical information such as ranks, marks, branches, and cutoffs. Embedding and retrieving these records through semantic search produced unreliable results for precise cutoff queries.
 
+A purely rule-based approach had the opposite problem: it required users to phrase their questions in very specific ways.
 
-**College Advisor**
---------------------
+The final system therefore uses a hybrid approach:
 
-Trials:
+- **LLM** for understanding natural-language queries and extracting parameters
+- **Structured JSON data** for deterministic cutoff retrieval
+- **Conversational memory** for handling follow-up questions
 
-1.	RAG: Tried implementing RAG since it seemed the most suitable. However no success since :
+This combines the flexibility of an LLM with the reliability of structured data retrieval.
 
-    a. Data was mostly numerical (RAG needs large amounts of textual data for LLM to train on)
-  	
-    b. The only sources of data are govt sites (NTA) but are limited in info.
-  	
-    c. There are no APIs so no live retrieval has been implemented.
-  	
-    d. Rank vs Marks jsons when vector embedded kept being treated as word tokens and giving incorrect results.
+## How It Works
 
-3.	Regex: Requires prompts in a very specific way which is not what the task demands.
+```text
+User Query
+    ↓
+LLM Parameter Extraction
+    ↓
+Query Classification
+    ↓
+┌───────────────────────┬──────────────────────┐
+│ Structured Query      │ General Query        │
+│                       │                      │
+│ Extract parameters    │ Directly handled     │
+│ ↓                     │ by the LLM           │
+│ Filter cutoff data    │                      │
+│ ↓                     │                      │
+│ Retrieve results      │                      │
+└───────────┬───────────┴──────────┬───────────┘
+            ↓                      ↓
+             Response Generation
+                    ↓
+            Conversational Memory
+```
 
-Hence, I stuck to a hybrid which uses LLMs for dealing with natural language and some logic for querying the data.
+For structured queries, the LLM extracts parameters such as:
 
+- Exam
+- Marks or rank
+- College
+- Branch
+- Gender
 
+These parameters are then used to query the corresponding JSON dataset.
 
+The retrieved results are passed back to the LLM, which converts them into a natural-language response.
 
-Working (overview):
-1.	User enters natural prompt
-2.	LLM extracts parameters (rank, gender, exam, marks, branch)
-3.	Prompt is classified as ‘general’ or ‘structured’
-4.	If structured => parameters are extracted => seats are filtered 
-5.	Answers are compiled and sent back to LLM which responds to user
-6.  Memory updated for future use
+Relevant context is also stored so that follow-up questions can refer to information from earlier turns.
 
+## Example
 
+### Initial Query
 
+> What can I get in IIT Bombay with 180 marks?
 
-Pros:
-1.	Database is 100% accurate and reliable for cutoffs
-2.	LLM can respond to general queries such as ‘best books for jee’ as well
+The system extracts:
 
-Cons:
-1.	Typos: Misspelling/abbreviations/nicknames of branches or college names can throw the agent off (Eg: Trichy != Tiruchirappalli)
-2.	Prompt: For the database query to trigger, prompt must have marks + either college OR branch 
-3.	Memory: Since a new instance of the agent is being called every time agent does not recall previous information. 
+```text
+College: IIT Bombay
+Marks: 180
+Exam: JEE Advanced
+Gender: Gender Neutral
+```
 
-However, a makeshift memory has been implemented which helps the agent recall with decent results but not reliable for complex memory tasks.
+The structured cutoff data is then filtered using these parameters.
 
+### Follow-up Query
 
+> How is campus life over there?
 
-What can be better?
-For a hybrid model as such, the only improvements can be in better prompts, improving logic (such as setting a filter for displaying the best 5 colleges from available options) and diversifying exams.
-Best performance would be by implementing RAG. The only issue being: getting accurate data for the hundreds of colleges + placement data + campus information instead of simple JSONs by scraping (not possible with NTA, and would rather not use Shiksha.com or unreliable websites).
+The system uses conversational memory to understand that "there" refers to IIT Bombay.
 
+### Another Follow-up
 
+> Should I take a drop instead?
 
+The previous conversation context is retained, allowing the LLM to answer the question in context.
 
+## Features
 
-**Sample Run (if running code not possible):**
---------------------------------------------------
+- Natural-language JEE queries
+- Support for JEE Main and JEE Advanced cutoff data
+- Structured filtering of cutoff information
+- General-purpose LLM responses
+- Conversational follow-up questions
+- Contextual memory
+- Fully local inference using Ollama
+- No external API required
 
-(Some observations mentioned in brackets by me, not the agent)
+## Tech Stack
 
-('...' used by me to indicate that LLM continues with rest of the answer)
+- **Python**
+- **Ollama**
+- **Local LLM**
+- **JSON**
+- **Natural Language Processing**
 
-Starting...
-Agent: Namaste!I'm thrilled to help you explore the best engineering colleges in India. It's exciting that you're considering pursuing your passion for engineering, and I'm here to guide you through the process. What sparked your interest in engineering, and what are your expectations from an ideal college experience?
+## Setup
 
+### 1. Install Ollama
 
---------------------------------------------------
-Type 'exit' or 'quit' to end the conversation.
+Install Ollama from:
 
-You: what can i get in iit bombay with 180 marks?
-(iit Bombay, 180, jee adv, gender-neutral extracted) 
+https://ollama.com/
 
-Agent: Hey there!
-I've got some exciting options for you based on your JEE Advanced rank and preferences. Since you're eligible for several programs at IIT Bombay, let's dive into each of them:
-**Chemistry (4 Years, Bachelor of Science) at Indian Institute Of Technology Bombay**
-This program is designed to provide a solid foundation in chemistry and its applications. You'll explore topics like analytical techniques, physical chemistry, and After graduation, you can pursue careers in....
-**Your rank: 4101**
-**Environmental Science and Engineering (4 Years, Bachelor of Technology) at Indian Institute Of Technology Bombay**
-This program....				     
-(continues to list programs I am eligible for in IITB)
-________________________________________________________
+Download a suitable local model before running the project.
 
-You: how is the campus life over there?				             
-(IITB NOT mentioned to test memory)
+### 2. Download the Dataset
 
-Agent: Campus life at IIT Bombay is truly vibrant and exciting! As one of the oldest and most prestigious engineering institutions in India, IIT Bombay offers a....			       
-(IITB used from memory)
-________________________________________________________
+Download all JSON files from the `data/` directory and place them inside the project's `data/` directory.
 
-You: should i take a drop instead? 						
-(again, no information given)
+Keep the original filenames unchanged.
 
-Agent: The age-old dilemma of whether to take a drop or not!
-As your advisor, I'd like to weigh in on this decision. Since you've already secured admission to IIT Bombay with 180 marks, it's essential to consider the pros and cons of taking a drop.... 		        
-(agent memory working)
-________________________________________________________
+### 3. Run the Application
 
-You: end
+```bash
+python main.py
+```
 
-Goodbye!
-________________________________________________________
+Depending on the hardware and model being used, generating a response may take approximately 1–4 minutes.
+
+## Project Structure
+
+```text
+CCAI-Task/
+│
+├── data/
+│   └── JEE cutoff datasets
+│
+├── main.py
+├── utils.py
+└── README.md
+```
+
+## Design Decisions
+
+### Why not use RAG?
+
+The main challenge was that the dataset consists largely of structured numerical information.
+
+For example, a question such as:
+
+> What colleges can I get with 180 marks?
+
+requires precise filtering across numerical fields. Semantic similarity alone is not a reliable way to perform this kind of lookup.
+
+Instead, the project uses the LLM to understand the user's intent and extract structured parameters, while the actual retrieval is performed deterministically from the dataset.
+
+### Why use an LLM at all?
+
+A purely rule-based system would require carefully formatted queries and extensive handling of different ways users might express the same request.
+
+Using an LLM allows the user to ask questions naturally while keeping the actual cutoff retrieval deterministic.
+
+## Limitations
+
+- The system depends on the quality and coverage of the provided cutoff datasets.
+- College and branch names written with unusual abbreviations or typos may not always be interpreted correctly.
+- Structured cutoff queries require enough information for the system to determine the relevant dataset and filters.
+- Conversational memory may occasionally fail to resolve ambiguous references.
+- The datasets are static and must be updated manually.
+
+## Future Improvements
+
+- Better normalization of college and branch names
+- More robust handling of abbreviations and typos
+- Improved conversational memory
+- Support for additional entrance exams and datasets
+- Better ranking and recommendation of possible colleges
+- Automated collection and validation of updated cutoff data
+
+## License
+
+This project was developed as an educational/demo project.
