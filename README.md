@@ -106,25 +106,73 @@ The previous conversation context is retained, allowing the LLM to answer the qu
 
 ## Setup
 
-### 1. Install Ollama
+### 1. Clone the Repository
 
-Install Ollama from:
+```bash
+git clone <REPOSITORY_URL>
+cd CCAI-Task
+```
 
-https://ollama.com/
+Cloning the repository creates the project directory and downloads all files tracked by Git.
 
-Download a suitable local model before running the project.
+### 2. Install Dependencies
 
-### 2. Download the Dataset
+Make sure Python 3.9+ is installed.
 
-Download all JSON files from the `data/` directory and place them inside the project's `data/` directory.
+If the repository contains a `requirements.txt` file, install the dependencies with:
 
-Keep the original filenames unchanged.
+```bash
+pip install -r requirements.txt
+```
 
-### 3. Run the Application
+### 3. Install Ollama
+
+Install Ollama from [ollama.com](https://ollama.com/).
+
+Verify the installation:
+
+```bash
+ollama --version
+```
+
+Download the local LLM used by the project:
+
+```bash
+ollama pull <MODEL_NAME>
+```
+
+The required model name can be found in `main.py`.
+
+Make sure Ollama is running before starting the application.
+
+### 4. Add the Cutoff Dataset
+
+The cutoff JSON files are required for structured queries.
+
+If the JSON datasets are not included in the repository, download them separately and place them inside the project's `data/` directory.
+
+The directory should look like:
+
+```text
+data/
+├── <cutoff_dataset_1>.json
+├── <cutoff_dataset_2>.json
+└── ...
+```
+
+Keep the original filenames unchanged, as the application expects the files at their specified paths.
+
+> **Note:** If the JSON files are already included in the repository, no additional dataset setup is required.
+
+### 5. Run the Application
+
+From the project root:
 
 ```bash
 python main.py
 ```
+
+The application will start using the local LLM through Ollama.
 
 Depending on the hardware and model being used, generating a response may take approximately 1–4 minutes.
 
