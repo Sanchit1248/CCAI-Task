@@ -109,7 +109,7 @@ The previous conversation context is retained, allowing the LLM to answer the qu
 ### 1. Clone the Repository
 
 ```bash
-git clone <REPOSITORY_URL>
+git clone https://github.com/Sanchit1248/CCAI-Task
 cd CCAI-Task
 ```
 
@@ -119,15 +119,13 @@ Cloning the repository creates the project directory and downloads all files tra
 
 Make sure Python 3.9+ is installed.
 
-If the repository contains a `requirements.txt` file, install the dependencies with:
+Install the dependencies with:
 
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3. Install Ollama
-
-Install Ollama from [ollama.com](https://ollama.com/).
 
 Verify the installation:
 
@@ -138,7 +136,7 @@ ollama --version
 Download the local LLM used by the project:
 
 ```bash
-ollama pull <MODEL_NAME>
+ollama pull llama3
 ```
 
 The required model name can be found in `main.py`.
